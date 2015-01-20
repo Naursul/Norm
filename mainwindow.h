@@ -2,6 +2,8 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QtSql/QSqlDatabase>
+#include <QtSql/QSqlQuery>
 
 namespace Ui {
 class MainWindow;
@@ -17,6 +19,20 @@ public:
     
 private:
     Ui::MainWindow *ui;
+
+    QSqlDatabase db;
+
+    int tIn; // интервал таймера
+
+    QString hName; // имя хоста
+    QString bName; // название базы данных
+    QString uName, uPass; //логин и пользователь
+
+    bool timerFlag; //флаг включенного таймера
+
+//    void optLoad(void);  //загрузка настроек
+//    void askPass(); //процедура запроса пароля
+
 };
 
 #endif // MAINWINDOW_H
