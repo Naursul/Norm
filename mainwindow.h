@@ -2,8 +2,15 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+
 #include <QtSql/QSqlDatabase>
 #include <QtSql/QSqlQuery>
+#include <QSqlError>
+
+#include <QMessageBox>
+#include <QTimer>
+
+#include "logpass.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,7 +23,10 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
+
+private slots:
+    void enableMain(void);
+
 private:
     Ui::MainWindow *ui;
 
@@ -31,7 +41,9 @@ private:
     bool timerFlag; //флаг включенного таймера
 
 //    void optLoad(void);  //загрузка настроек
-//    void askPass(); //процедура запроса пароля
+    void askPass(); //процедура запроса пароля
+
+    LogPass *Passcard;  //окно запроса логина пароля
 
 };
 

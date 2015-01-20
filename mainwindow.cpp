@@ -13,8 +13,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Задание переменных по умолчанию
    ===============================*/
 
-    timerFlag = true; //таймер по умолчанию включен
-    tIn = 30000; // задание интервала обновления по умолчанию
+//    timerFlag = true; //таймер по умолчанию включен
+//    tIn = 30000; // задание интервала обновления по умолчанию
     hName = "localhost"; //имя хоста по умолчанию
     bName = "PolusGold"; //имя БД по умолчанию
     uName = "Naursul"; //Логин по умолчанию                        УДАЛИТЬ!!!
@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
     db.setUserName(uName); //установка имени пользователя для подключения
     db.setPassword(uPass); //установка пароля для входа
 
-    if (db.open()) {
+    if (db.open()) {                                                            //ТЕСТОВАЯ ВСТАВКА
         db.close();
         ui->plainTextEdit->setPlainText("подключение произошло... типа");
     }
@@ -99,31 +99,24 @@ void MainWindow::optLoad(void)
 /* ==========================
     процедура запроса пароля
    ========================*/
-/*
+
 void MainWindow::askPass()
 {
-    //QTextCodec *ttt = QTextCodec::codecForName("Windows-1251");
-    Passcard = new NamePass(this, &usverName, &usverPass);
+    QString usverName, usverPass;
+    Passcard = new LogPass(this, &usverName, &usverPass);
         switch (Passcard->exec()) {
             case QDialog::Accepted:
-
-            //ui->textEdit->append(usverName);
-            //ui->textEdit->append(usverName);
-                db.setUserName(usverName); //установка имени пользователя для подключения (попробовать сделать отдельным окном!)
-                db.setPassword(usverPass); //установка пароля для входа
+                uName = usverName; //установка имени пользователя для подключения
+                uPass = usverPass; //установка пароля для входа
+                db.setUserName(uName); //установка имени пользователя для подключения
+                db.setPassword(uPass); //установка пароля для входа
                 if (db.open()) {
                     db.close();
                     QTimer::singleShot(0, this, SLOT(enableMain()));
-                    loadBase();
-                    timerON();
                 } else {
                     QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, tr("Ошибка"), tr("\nНеверно указан логин/пароль!"), QMessageBox::Close, this);
                     msgBox->exec();
                     QTimer::singleShot(0, this, SLOT(enableMain()));
-                    ui->OrglistWidget->clear();
-                    ui->DoglistWidget->clear();
-                    ui->treeWidget->clear();
-                    timer->stop();
                 }
                 break;
             case QDialog::Rejected:
@@ -133,4 +126,18 @@ void MainWindow::askPass()
                 QTimer::singleShot(0, this, SLOT(close()));
                 break;
          }
-}*/
+}
+
+/* ================================================
+    реакция на проверку правильности логина/пароля
+   ==============================================*/
+
+void MainWindow::enableMain(void)
+{
+    if (db.open()) {
+        db.close();
+        ui->centralWidget->setEnabled(true);
+    } else {
+        ui->centralWidget->setEnabled(false);
+    }
+}

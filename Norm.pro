@@ -11,8 +11,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    logpass.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    logpass.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    logpass.ui
