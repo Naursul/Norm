@@ -76,7 +76,7 @@
              </size>
             </property>
             <property name="text">
-             <string>TextLabel</string>
+             <string>Типы продукции</string>
             </property>
            </widget>
           </item>
@@ -94,7 +94,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QListWidget" name="listWidget">
+           <widget class="QListWidget" name="ProdTypes">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
               <horstretch>40</horstretch>

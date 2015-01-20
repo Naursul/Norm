@@ -8,6 +8,13 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
     db = QSqlDatabase::addDatabase("QMYSQL");
 
+/* ==========================================
+    задание полей для таблицы вывода в форме
+   ========================================*/
+
+    usFields = "Operator.idOperator, Operator.OperatorName, Operator.BaseName";  //Список полей для таблицы исполнителей (операторов)
+    prodFields = "ProdGroup.idProdGroup, ProdGroup.ProdGroupName, ProdGroup.Operator_idOperator"; //список полей таблицы групп продукции
+
 
 /* =================================
     Задание переменных по умолчанию
@@ -39,9 +46,10 @@ MainWindow::MainWindow(QWidget *parent) :
 
     if (db.open()) {                                                            //ТЕСТОВАЯ ВСТАВКА
         db.close();
-        ui->plainTextEdit->setPlainText("подключение произошло... типа");
+        ui->plainTextEdit->appendPlainText("Подключение произошло... типа");
     }
 
+    loadData();
 
 }
 
@@ -139,5 +147,81 @@ void MainWindow::enableMain(void)
         ui->centralWidget->setEnabled(true);
     } else {
         ui->centralWidget->setEnabled(false);
+    }
+}
+
+/* ============================
+    Загрузка данных для работы
+   ==========================*/
+
+void MainWindow::loadData()
+{
+#ifdef admin
+    LoadOperators("Select " + usFields + " from Operator order by Operator.OperatorName"); //Загрузка и создание списка операторов
+    QString idOper = idOpList.at(idOpNBList.indexOf(uName));
+    LoadProdGroup("Select " + prodFields + " from ProdGroup where ProdGroup.Operator_idOperator like " + idOper + " order by ProdGroup.ProdGroupName"); //Загрузка и создание списка групп продукции у определенного пользователя
+#endif
+}
+
+/* ============================
+    Загрузка списка операторов
+   ==========================*/
+
+void MainWindow::LoadOperators(QString queryText)
+{
+    if (db.open()) {
+        QSqlQuery query(db);
+        if (query.exec(queryText)) {
+            rowsOp = 0;
+            idOpList.clear(); //очистка списка ID орераторов
+            idOpNList.clear(); //очистка списка имен операторов
+            idOpNBList.clear(); //очистка списка имен операторов в БД
+            while (query.next()) {
+//                QListWidgetItem *newItem = new QListWidgetItem;
+                idOpList.append(query.value(0).toString());
+                idOpNList.append(query.value(1).toString());
+                idOpNBList.append(query.value(2).toString());
+ //               newItem->setText(query.value(1).toString());
+ //               ui->OrglistWidget->addItem(newItem);
+                rowsOp++;
+            }
+            ui->plainTextEdit->appendPlainText("Список операторов создан");
+        } else {
+            ui->plainTextEdit->setPlainText("Бяка произошла, не работает у тебя нихрена, нет подключения к базе для загрузки списка операторов! :(");
+            QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, tr("Ошибка"), query.lastError().text()); //вывод сообщения об ошибке
+            msgBox->exec();
+        }
+        db.close();
+    }
+}
+
+/* =================================
+    Загрузка списка групп продукции
+   ===============================*/
+
+void MainWindow::LoadProdGroup(QString queryText)
+{
+    if (db.open()) {
+        QSqlQuery query(db);
+        if (query.exec(queryText)) {
+            rowsPro = 0;
+            ui->ProdTypes->clear(); //очистка виджета списков продукции
+            idProList.clear(); //Очистка списка ID типов продукции
+            idProNList.clear(); //Очистка списка наименований типов продукции
+            while (query.next()) {
+                QListWidgetItem *newItem = new QListWidgetItem;
+                idProList.append(query.value(0).toString());
+                idProNList.append(query.value(1).toString());
+                newItem->setText(query.value(1).toString());
+                ui->ProdTypes->addItem(newItem);
+                rowsPro++;
+            }
+            ui->plainTextEdit->appendPlainText("Список типов продукции создан");
+        } else {
+            ui->plainTextEdit->setPlainText("Бяка произошла, не работает у тебя нихрена, нет подключения к базе для загрузки списка Типов продукции! :(");
+            QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, tr("Ошибка"), query.lastError().text()); //вывод сообщения об ошибке
+            msgBox->exec();
+        }
+        db.close();
     }
 }
