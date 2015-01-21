@@ -14,7 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     usFields = "Operator.idOperator, Operator.OperatorName, Operator.BaseName, Operator.Role";  //Список полей для таблицы исполнителей (операторов)
     prodFields = "ProdGroup.idProdGroup, ProdGroup.ProdGroupName, ProdGroup.Operator_idOperator"; //список полей таблицы групп продукции
-    workFields = "ProdGroup.ProdGroupName, IshodMas.IshNameShort, WorkTable.WorkTablecol, WorkTable.WorkTablecol1, WorkTable.WorkTablecol2"; //список полей для работы
+    workFields = "WorkTable.FlagReady, ProdGroup.ProdGroupName, IshodMas.IshNameShort, WorkTable.WorkTablecol, WorkTable.WorkTablecol1, WorkTable.WorkTablecol2"; //список полей для работы
 
 
 /* =================================
@@ -334,14 +334,28 @@ void MainWindow::LoadWorkTable(QString queryText)
             QStringList fields = workFields.split(", ");
             QString qqq;
             ui->plainTextEdit->appendPlainText("Количество столбцов в рабочей таблице = " + qqq.setNum(fields.count()));
-            ui->WorkTable->setColumnCount(fields.count());
+            ui->WorkTable->setColumnCount(fields.count()+1);
             while (query.next())
             {
                 ui->WorkTable->insertRow(row);
+                {
+                    QTableWidgetItem *tItem = new QTableWidgetItem("Готово");
+                    tItem->setFlags(Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+                    tItem->setCheckState((query.value(fields.indexOf("WorkTable.FlagReady")) == "1") ? Qt::Checked : Qt::Unchecked);
+                    ui->WorkTable->setItem(row, 0, tItem);
+                }
+                {
+                    QTableWidgetItem *tItem = new QTableWidgetItem(query.value(fields.indexOf("ProdGroup.ProdGroupName")).toString());
+                    tItem->setFlags(tItem->flags() ^ (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+                    ui->WorkTable->setItem(row, 1, tItem);
+                }
+                int colR = 2;
                 for (int col = 0; col < fields.count(); col++)
                 {
+                    if (col == fields.indexOf("WorkTable.FlagReady")) continue;
+                    if (col == fields.indexOf("ProdGroup.ProdGroupName")) continue;
                     QTableWidgetItem *tItem = new QTableWidgetItem(query.value(col).toString());
-                    ui->WorkTable->setItem(row, col, tItem);
+                    ui->WorkTable->setItem(row, colR++, tItem);
                 }
                 row++;
             }
