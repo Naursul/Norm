@@ -43,12 +43,14 @@ private:
     QString hName; // имя хоста
     QString bName; // название базы данных
     QString uName, uPass; //логин и пользователь
+    QString IDName, Role; //ID пользователя и его статус
     QString usFields, prodFields;  //перечни используемых полей из БД
 
     bool timerFlag; //флаг включенного таймера
 
 //    void optLoad(void);  //загрузка настроек
     void askPass(); //процедура запроса пароля
+    void RoleCheck(QString queryText); //проверка статуса пользователя и его ID
     void loadData(); //загрузка данных
     void LoadOperators(QString queryText); //загрузка списка операторов
     void LoadProdGroup(QString queryText); //загрузка списка групп продукции

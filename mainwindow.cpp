@@ -24,8 +24,10 @@ MainWindow::MainWindow(QWidget *parent) :
 //    tIn = 30000; // задание интервала обновления по умолчанию
     hName = "localhost"; //имя хоста по умолчанию
     bName = "PolusGold"; //имя БД по умолчанию
-    uName = "Naursul"; //Логин по умолчанию                        УДАЛИТЬ!!!
-    uPass = "ynjwiosx145449821"; //Пароль по умолчанию             УДАЛИТЬ!!!
+    uName = "Naursul"; //Логин по умолчанию (admin)                       УДАЛИТЬ!!!
+    uPass = "ynjwiosx145449821"; //Пароль по умолчанию                    УДАЛИТЬ!!!
+//    uName = "toster"; //Логин по умолчанию (user)                         УДАЛИТЬ!!!
+//    uPass = "tosterpass"; //Пароль по умолчанию                           УДАЛИТЬ!!!
 
 /* =======================
     чтение файла настроек
@@ -47,9 +49,13 @@ MainWindow::MainWindow(QWidget *parent) :
     if (db.open()) {                                                            //ТЕСТОВАЯ ВСТАВКА
         db.close();
         ui->plainTextEdit->appendPlainText("Подключение произошло... типа");
+        RoleCheck("Select Operator.idOperator, Operator.Role from Operator where Operator.BaseName like '" + uName + "'");  //Проверка статуса пользователя и его ID
     }
 
-    loadData();
+    if (Role == "User") {
+        ui->tabWidget->removeTab(1);
+    }
+    loadData();  //Загрузка данных из БД в рабочую форму
 
 }
 
@@ -121,6 +127,7 @@ void MainWindow::askPass()
                 if (db.open()) {
                     db.close();
                     QTimer::singleShot(0, this, SLOT(enableMain()));
+                    RoleCheck("Select Operator.idOperator, Operator.Role from Operator where Operator.BaseName like '" + uName + "'");  //Проверка статуса пользователя и его ID
                 } else {
                     QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, tr("Ошибка"), tr("\nНеверно указан логин/пароль!"), QMessageBox::Close, this);
                     msgBox->exec();
@@ -147,6 +154,29 @@ void MainWindow::enableMain(void)
         ui->centralWidget->setEnabled(true);
     } else {
         ui->centralWidget->setEnabled(false);
+    }
+}
+
+/* ===============================
+    проверка статуса пользователя
+   =============================*/
+
+void MainWindow::RoleCheck(QString queryText)
+{
+    if (db.open()) {
+        QSqlQuery query(db);
+        if (query.exec(queryText)) {
+            while (query.next()) {
+                IDName.append(query.value(0).toString());
+                Role.append(query.value(1).toString());
+            }
+            ui->plainTextEdit->appendPlainText("Получен статус пользователя (" + Role + ") и его ID (" + IDName +")");
+        } else {
+            ui->plainTextEdit->setPlainText("Бяка произошла, не работает у тебя нихрена, нет подключения к базе для получения роли оператора и его ID :(");
+            QMessageBox *msgBox = new QMessageBox(QMessageBox::Critical, tr("Ошибка"), query.lastError().text()); //вывод сообщения об ошибке
+            msgBox->exec();
+        }
+        db.close();
     }
 }
 
