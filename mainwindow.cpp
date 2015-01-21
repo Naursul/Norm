@@ -16,6 +16,12 @@ MainWindow::MainWindow(QWidget *parent) :
     prodFields = "ProdGroup.idProdGroup, ProdGroup.ProdGroupName, ProdGroup.Operator_idOperator"; //список полей таблицы групп продукции
     workFields = "WorkTable.FlagReady, ProdGroup.ProdGroupName, IshodMas.IshNameShort, WorkTable.WorkTablecol, WorkTable.WorkTablecol1, WorkTable.WorkTablecol2"; //список полей для работы
 
+/* =============================
+    Задание цветового выделения
+   ===========================*/
+
+    worCol.setRgb(250, 250, 250);
+    okCol.setRgb(198, 255, 203);
 
 /* =================================
     Задание переменных по умолчанию
@@ -309,6 +315,7 @@ void MainWindow::LoadProdGroup(QString queryText)
     if (rowsPro > 0)
     {
     ui->ProdTypes->setCurrentRow(0);
+    connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
     }
 }
 
@@ -319,11 +326,9 @@ void MainWindow::LoadProdGroup(QString queryText)
 void MainWindow::LoadWorkTable(QString queryText)
 {
     int row = ui->WorkTable->rowCount();
-    QString www;
     for (int i = row-1; i >= 0; i--)
     {
-    ui->plainTextEdit->appendPlainText("количество строк в таблице:" + www.setNum(i));
-    ui->WorkTable->removeRow(i);
+     ui->WorkTable->removeRow(i);
     }
     row = 0;
     if (db.open())
@@ -334,7 +339,7 @@ void MainWindow::LoadWorkTable(QString queryText)
             QStringList fields = workFields.split(", ");
             QString qqq;
             ui->plainTextEdit->appendPlainText("Количество столбцов в рабочей таблице = " + qqq.setNum(fields.count()));
-            ui->WorkTable->setColumnCount(fields.count()+1);
+            ui->WorkTable->setColumnCount(fields.count());
             while (query.next())
             {
                 ui->WorkTable->insertRow(row);
@@ -354,9 +359,15 @@ void MainWindow::LoadWorkTable(QString queryText)
                 {
                     if (col == fields.indexOf("WorkTable.FlagReady")) continue;
                     if (col == fields.indexOf("ProdGroup.ProdGroupName")) continue;
+                    if (ui->WorkTable->columnCount() < fields.count())
+                    {
+                        ui->WorkTable->setColumnCount(ui->WorkTable->columnCount() + 1);
+                    }
+
                     QTableWidgetItem *tItem = new QTableWidgetItem(query.value(col).toString());
                     ui->WorkTable->setItem(row, colR++, tItem);
                 }
+                color(row);
                 row++;
             }
         }
@@ -381,5 +392,47 @@ void MainWindow::LoadWorkTable(QString queryText)
 
 void MainWindow::on_ProdTypes_currentRowChanged(int currentRow)
 {
+    if (disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int))))
+    {
+        ui->plainTextEdit->appendPlainText("Отдисконнектил");
+    }
     LoadWorkTable("select " + workFields + " from WorkTable join IshodMas on (WorkTable.IshodMas_idIshodMas = IshodMas.idIshodMas) left join ProdGroup on (WorkTable.ProdGroup_idProdGroup = ProdGroup.idProdGroup) where ProdGroup.idProdGroup = " + idProList.at(currentRow));
+    connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
+}
+
+/* ========================================================
+    Реакция на изменение значения ячейки в рабочей таблице
+   ======================================================*/
+
+void MainWindow::WorkTableCellChanged(int row, int column)
+{
+    if (column == 0)
+    {
+        color(row);
+    }
+    //тут сделать вызов процедуры записи в БД
+}
+
+/* ===============================================
+    установка цвета ячеек и запрет редактирования
+   =============================================*/
+
+void MainWindow::color(int row)
+{
+    for (int col = 0; col < ui->WorkTable->columnCount(); col++)
+    {
+        QString qqq;
+        if (ui->WorkTable->item(row, 0)->checkState())  //если запись выполнена
+        {
+            ui->WorkTable->item(row, col)->setBackground(okCol);
+        }
+        else
+        {
+            ui->WorkTable->item(row, col)->setBackground(worCol);
+        }
+        if (col > 1)
+        {
+           // ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() ^ (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+        }
+    }
 }

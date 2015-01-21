@@ -10,6 +10,8 @@
 #include <QMessageBox>
 #include <QTimer>
 
+#include <QColor>
+
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
@@ -32,6 +34,8 @@ private slots:
 
     void on_ProdTypes_currentRowChanged(int currentRow);
 
+    void WorkTableCellChanged(int row, int column);
+
 private:
     Ui::MainWindow *ui;
 
@@ -49,6 +53,8 @@ private:
     QString IDName, Role; //ID пользователя и его статус
     QString usFields, prodFields, workFields;  //перечни используемых полей из БД
 
+    QColor worCol, okCol;  //цвет позиции в работе, готовой позиции
+
     bool timerFlag; //флаг включенного таймера
 
 //    void optLoad(void);  //загрузка настроек
@@ -58,6 +64,7 @@ private:
     void LoadOperators(QString queryText); //загрузка списка операторов
     void LoadProdGroup(QString queryText); //загрузка списка групп продукции
     void LoadWorkTable(QString queryText); //загрузка данных для обработки
+    void color(int row); //установка цвета ячеек и запрет редактирования
 
     LogPass *Passcard;  //окно запроса логина пароля
 
