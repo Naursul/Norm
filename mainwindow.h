@@ -10,9 +10,10 @@
 #include <QMessageBox>
 #include <QTimer>
 
-#include "logpass.h"
+#include <QTableWidget>
+#include <QTableWidgetItem>
 
-#define admin 0
+#include "logpass.h"
 
 namespace Ui {
 class MainWindow;
@@ -29,6 +30,8 @@ public:
 private slots:
     void enableMain(void);
 
+    void on_ProdTypes_currentRowChanged(int currentRow);
+
 private:
     Ui::MainWindow *ui;
 
@@ -37,14 +40,14 @@ private:
     int tIn; // интервал таймера
     int rowsOp, rowsPro;  //количество колонок и строк в списках
 
-    QStringList idOpList, idOpNList,idOpNBList; //ID оператора, Имя оператора, Имя оператора в БД
+    QStringList idOpList, idOpNList, idOpNBList, idOpRList; //ID оператора, Имя оператора, Имя оператора в БД, статус оператора
     QStringList idProList, idProNList; //списки ID и наименований
 
     QString hName; // имя хоста
     QString bName; // название базы данных
     QString uName, uPass; //логин и пользователь
     QString IDName, Role; //ID пользователя и его статус
-    QString usFields, prodFields;  //перечни используемых полей из БД
+    QString usFields, prodFields, workFields;  //перечни используемых полей из БД
 
     bool timerFlag; //флаг включенного таймера
 
@@ -54,7 +57,7 @@ private:
     void loadData(); //загрузка данных
     void LoadOperators(QString queryText); //загрузка списка операторов
     void LoadProdGroup(QString queryText); //загрузка списка групп продукции
-
+    void LoadWorkTable(QString queryText); //загрузка данных для обработки
 
     LogPass *Passcard;  //окно запроса логина пароля
 
