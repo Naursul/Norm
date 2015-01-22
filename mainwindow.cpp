@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Задание цветового выделения
    ===========================*/
 
-    worCol.setRgb(250, 250, 250);
+    worCol.setRgb(240, 240, 240);
     okCol.setRgb(198, 255, 203);
 
 /* =================================
@@ -315,7 +315,6 @@ void MainWindow::LoadProdGroup(QString queryText)
     if (rowsPro > 0)
     {
     ui->ProdTypes->setCurrentRow(0);
-    connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
     }
 }
 
@@ -392,10 +391,7 @@ void MainWindow::LoadWorkTable(QString queryText)
 
 void MainWindow::on_ProdTypes_currentRowChanged(int currentRow)
 {
-    if (disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int))))
-    {
-        ui->plainTextEdit->appendPlainText("Отдисконнектил");
-    }
+    disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
     LoadWorkTable("select " + workFields + " from WorkTable join IshodMas on (WorkTable.IshodMas_idIshodMas = IshodMas.idIshodMas) left join ProdGroup on (WorkTable.ProdGroup_idProdGroup = ProdGroup.idProdGroup) where ProdGroup.idProdGroup = " + idProList.at(currentRow));
     connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
 }
@@ -421,18 +417,21 @@ void MainWindow::color(int row)
 {
     for (int col = 0; col < ui->WorkTable->columnCount(); col++)
     {
-        QString qqq;
         if (ui->WorkTable->item(row, 0)->checkState())  //если запись выполнена
         {
             ui->WorkTable->item(row, col)->setBackground(okCol);
+            if ((ui->WorkTable->item(row, col)->flags() & Qt::ItemIsEditable) > 0)
+            {
+                ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() ^ (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+            }
         }
         else
         {
             ui->WorkTable->item(row, col)->setBackground(worCol);
-        }
-        if (col > 1)
-        {
-           // ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() ^ (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+            if (((ui->WorkTable->item(row, col)->flags() ^ Qt::ItemIsEditable) > 0) & (col>1))
+            {
+                ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() | (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+            }
         }
     }
 }
