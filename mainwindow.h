@@ -65,6 +65,7 @@ private:
 
     QStringList idOpList, idOpNList, idOpNBList, idOpRList; //ID оператора, Имя оператора, Имя оператора в БД, статус оператора
     QStringList idProList, idProNList; //списки ID и наименований
+    QStringList fields; //список полей в рабочей таблице
 
     QList<QPoint> sList; //Список координат в таблице. соответствующих запросу поиска
 
@@ -81,6 +82,7 @@ private:
     void LoadProdGroup(QString queryText); //загрузка списка групп продукции
     void LoadWorkTable(QString queryText); //загрузка данных для обработки
     void color(int row); //установка цвета ячеек и запрет редактирования
+    void updateDataBase(int row, int col); //обновление базы данных значением из ячейки
 
     LogPass *Passcard;  //окно запроса логина пароля
 
