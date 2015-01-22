@@ -1,0 +1,7 @@
+<RCC>
+    <qresource prefix="/new/Icons">
+        <file>Icons/Actions-go-next-icon.png</file>
+        <file>Icons/Actions-go-previous-icon.png</file>
+        <file>Icons/search-icon.png</file>
+    </qresource>
+</RCC>

@@ -12,6 +12,9 @@
 
 #include <QColor>
 
+#include <QList>
+#include <QPoint>
+
 #include <QTableWidget>
 #include <QTableWidgetItem>
 
@@ -36,6 +39,12 @@ private slots:
 
     void WorkTableCellChanged(int row, int column);
 
+    void on_SearchButton_clicked();
+
+    void on_SearchNext_clicked();
+
+    void on_SearchPrev_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -43,15 +52,18 @@ private:
 
     int tIn; // интервал таймера
     int rowsOp, rowsPro;  //количество колонок и строк в списках
-
-    QStringList idOpList, idOpNList, idOpNBList, idOpRList; //ID оператора, Имя оператора, Имя оператора в БД, статус оператора
-    QStringList idProList, idProNList; //списки ID и наименований
+    int curSPoz; //текущая позиция в списке поиска
 
     QString hName; // имя хоста
     QString bName; // название базы данных
     QString uName, uPass; //логин и пользователь
     QString IDName, Role; //ID пользователя и его статус
     QString usFields, prodFields, workFields;  //перечни используемых полей из БД
+
+    QStringList idOpList, idOpNList, idOpNBList, idOpRList; //ID оператора, Имя оператора, Имя оператора в БД, статус оператора
+    QStringList idProList, idProNList; //списки ID и наименований
+
+    QList<QPoint> sList; //Список координат в таблице. соответствующих запросу поиска
 
     QColor worCol, okCol;  //цвет позиции в работе, готовой позиции
 
@@ -60,6 +72,7 @@ private:
 //    void optLoad(void);  //загрузка настроек
     void askPass(); //процедура запроса пароля
     void RoleCheck(QString queryText); //проверка статуса пользователя и его ID
+    void initWorkTable(); //Инициализация (очистка) всех листов, переменных для работы в рабочей таблице
     void loadData(); //загрузка данных
     void LoadOperators(QString queryText); //загрузка списка операторов
     void LoadProdGroup(QString queryText); //загрузка списка групп продукции

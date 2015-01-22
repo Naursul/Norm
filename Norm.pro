@@ -19,3 +19,6 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui \
     logpass.ui
+
+RESOURCES += \
+    res.qrc

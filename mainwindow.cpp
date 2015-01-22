@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent) :
     Задание цветового выделения
    ===========================*/
 
-    worCol.setRgb(240, 240, 240);
+    worCol.setRgb(255, 255, 255);
     okCol.setRgb(198, 255, 203);
 
 /* =================================
@@ -216,6 +216,18 @@ void MainWindow::RoleCheck(QString queryText)
     }
 }
 
+/* ==============================================================================
+    Инициализация (очистка) всех листов, переменных для работы в рабочей таблице
+   ============================================================================*/
+
+void MainWindow::initWorkTable()
+{
+    sList.clear();
+    curSPoz = 0;
+    ui->SearchNext->setEnabled(false);
+    ui->SearchPrev->setEnabled(false);
+}
+
 /* ============================
     Загрузка данных для работы
    ==========================*/
@@ -391,6 +403,7 @@ void MainWindow::LoadWorkTable(QString queryText)
 
 void MainWindow::on_ProdTypes_currentRowChanged(int currentRow)
 {
+    initWorkTable();
     disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
     LoadWorkTable("select " + workFields + " from WorkTable join IshodMas on (WorkTable.IshodMas_idIshodMas = IshodMas.idIshodMas) left join ProdGroup on (WorkTable.ProdGroup_idProdGroup = ProdGroup.idProdGroup) where ProdGroup.idProdGroup = " + idProList.at(currentRow));
     connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
@@ -422,7 +435,7 @@ void MainWindow::color(int row)
             ui->WorkTable->item(row, col)->setBackground(okCol);
             if ((ui->WorkTable->item(row, col)->flags() & Qt::ItemIsEditable) > 0)
             {
-                ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() ^ (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+                ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() ^ (Qt::ItemIsEditable));// | Qt::ItemIsSelectable));
             }
         }
         else
@@ -430,8 +443,75 @@ void MainWindow::color(int row)
             ui->WorkTable->item(row, col)->setBackground(worCol);
             if (((ui->WorkTable->item(row, col)->flags() ^ Qt::ItemIsEditable) > 0) & (col>1))
             {
-                ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() | (Qt::ItemIsEditable | Qt::ItemIsSelectable));
+                ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() | (Qt::ItemIsEditable));// | Qt::ItemIsSelectable));
             }
         }
+    }
+}
+
+/* ===================================
+    Реакция на нажатие кнопки "Поиск"
+   =================================*/
+
+void MainWindow::on_SearchButton_clicked()
+{
+    QString search = ui->SearchLine->text().trimmed();
+    if (search.length() > 0)
+    {
+        sList.clear();
+        ui->SearchNext->setEnabled(false);
+        ui->SearchPrev->setEnabled(false);
+        for (int row = 0; row < ui->WorkTable->rowCount(); row++)
+        {
+            for (int col = 2; col < ui->WorkTable->columnCount(); col++)
+            {
+                if (ui->WorkTable->item(row, col)->text().contains(search, Qt::CaseInsensitive))
+                {
+                    QPoint coor;
+                    coor.setX(row);
+                    coor.setY(col);
+                    sList.append(coor);
+                }
+            }
+        }
+        if (sList.length() > 1)
+        {
+            ui->SearchNext->setEnabled(true);
+        }
+        if (sList.length() > 0)
+        {
+            curSPoz = 0;
+            ui->WorkTable->setCurrentCell(sList.at(curSPoz).x(), sList.at(curSPoz).y());
+        }
+    }
+}
+
+/* =======================================================
+    Реакция на нажатие кнопки "Следующий в списке поиска"
+   =====================================================*/
+
+void MainWindow::on_SearchNext_clicked()
+{
+    curSPoz++;
+    ui->WorkTable->setCurrentCell(sList.at(curSPoz).x(), sList.at(curSPoz).y());
+    ui->SearchPrev->setEnabled(true);
+    if (curSPoz >= (sList.count()-1))
+    {
+        ui->SearchNext->setEnabled(false);
+    }
+}
+
+/* ========================================================
+    Реакция на нажатие кнопки "Предыдущий в списке поиска"
+   ======================================================*/
+
+void MainWindow::on_SearchPrev_clicked()
+{
+    curSPoz--;
+    ui->WorkTable->setCurrentCell(sList.at(curSPoz).x(), sList.at(curSPoz).y());
+    ui->SearchNext->setEnabled(true);
+    if (curSPoz <= 0)
+    {
+        ui->SearchPrev->setEnabled(false);
     }
 }
