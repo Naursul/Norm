@@ -330,9 +330,9 @@ void MainWindow::LoadProdGroup(QString queryText)
     }
 }
 
-/* ===============================
-    Загрузка данных для обработки
-   =============================*/
+/* =========================================
+    Загрузка данных для обработки в таблицу
+   =======================================*/
 
 void MainWindow::LoadWorkTable(QString queryText)
 {
@@ -341,6 +341,7 @@ void MainWindow::LoadWorkTable(QString queryText)
     {
      ui->WorkTable->removeRow(i);
     }
+    ui->statusBar->clearMessage();
     row = 0;
     if (db.open())
     {
@@ -381,6 +382,8 @@ void MainWindow::LoadWorkTable(QString queryText)
                 color(row);
                 row++;
             }
+            QString txt;
+            ui->statusBar->showMessage(tr("Загружено позиций: ") + tmpStr.setNum(ui->WorkTable->rowCount()), 10000);
         }
         else
         {
@@ -461,6 +464,7 @@ void MainWindow::on_SearchButton_clicked()
         sList.clear();
         ui->SearchNext->setEnabled(false);
         ui->SearchPrev->setEnabled(false);
+        ui->statusBar->clearMessage();
         for (int row = 0; row < ui->WorkTable->rowCount(); row++)
         {
             for (int col = 2; col < ui->WorkTable->columnCount(); col++)
@@ -480,9 +484,19 @@ void MainWindow::on_SearchButton_clicked()
         }
         if (sList.length() > 0)
         {
+            QString txt;
+            ui->statusBar->showMessage(tr("Найдено совпадений: ") + txt.setNum(sList.length()), 10000);
             curSPoz = 0;
             ui->WorkTable->setCurrentCell(sList.at(curSPoz).x(), sList.at(curSPoz).y());
         }
+        else
+        {
+            ui->statusBar->showMessage(tr("Совпадений не найдено"), 10000);
+        }
+    }
+    else
+    {
+        ui->statusBar->showMessage(tr("Не задана строка поиска"), 10000);
     }
 }
 
@@ -514,4 +528,9 @@ void MainWindow::on_SearchPrev_clicked()
     {
         ui->SearchPrev->setEnabled(false);
     }
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+   // ui->WorkTable->r
 }

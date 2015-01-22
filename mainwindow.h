@@ -45,6 +45,8 @@ private slots:
 
     void on_SearchPrev_clicked();
 
+    void on_pushButton_clicked();
+
 private:
     Ui::MainWindow *ui;
 
@@ -59,6 +61,7 @@ private:
     QString uName, uPass; //логин и пользователь
     QString IDName, Role; //ID пользователя и его статус
     QString usFields, prodFields, workFields;  //перечни используемых полей из БД
+    QString tmpStr; //переменная для разовых операций со строками
 
     QStringList idOpList, idOpNList, idOpNBList, idOpRList; //ID оператора, Имя оператора, Имя оператора в БД, статус оператора
     QStringList idProList, idProNList; //списки ID и наименований
