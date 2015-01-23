@@ -15,9 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     usFields = "Operator.idOperator, Operator.OperatorName, Operator.BaseName, Operator.Role";  //Список полей для таблицы исполнителей (операторов)
     prodFields = "ProdGroup.idProdGroup, ProdGroup.ProdGroupName, ProdGroup.Operator_idOperator"; //список полей таблицы групп продукции
     workFields = "WorkTable.FlagReady, ProdGroup.ProdGroupName, IshodMas.idIshodMas, IshodMas.IshNameShort, WorkTable.WorkTablecol, WorkTable.WorkTablecol1, WorkTable.WorkTablecol2"; //список полей для работы
-    HFields << tr("Готово") << tr("Тип\nпродукции") << tr("ID") << tr("Исходное\nнаименование") << tr("Столбец 5") << tr("Столбец 6") << tr("Столбец 7");
-    alignment << Qt::AlignCenter << Qt::AlignHCenter << Qt::AlignCenter << Qt::AlignHCenter << Qt::AlignCenter << Qt::AlignCenter << Qt::AlignCenter;
-//    resMode << QHeaderView::Fixed << QHeaderView::ResizeToContents << QHeaderView::Fixed << QHeaderView::Stretch
+    HFields << tr("Готово") << tr("Тип\nпродукции") << tr("ID") << tr("Исходное\nнаименование");
 
 /* =============================
     Задание цветового выделения
@@ -355,26 +353,6 @@ void MainWindow::LoadWorkTable(QString queryText)
             fields = workFields.split(", ");
             ui->plainTextEdit->appendPlainText("Количество столбцов в рабочей таблице = " + tmpStr.setNum(fields.count()));
             ui->WorkTable->setColumnCount(fields.count());
-            ui->WorkTable->setHorizontalHeaderLabels(HFields);
-/*            for (int i = 0; i < fields.count(); i++)
-            {
-                int j = fields.indexOf("WorkTable.FlagReady");
-                switch (i)
-                {
-                case j:
-                    ui->WorkTable->setColumnWidth(i, 50);
-                    break;
-                case fields.indexOf("ProdGroup.ProdGroupName"):
-                    ui->WorkTable->setColumnWidth(i, 150);
-                    break;
-                case fields.indexOf("IshodMas.idIshodMas"):
-                    ui->WorkTable->setColumnWidth(i, 100);
-                    break;
-                default:
-                    ui->WorkTable->setColumnWidth(i, 200);
-                    break;
-                }
-            }*/
             while (query.next())
             {
                 ui->WorkTable->insertRow(row);
@@ -404,23 +382,36 @@ void MainWindow::LoadWorkTable(QString queryText)
                     ui->WorkTable->setColumnWidth(fields.indexOf("IshodMas.idIshodMas"), 100);
                     colR++;
                 }
+                if (fields.indexOf("IshodMas.IshNameShort") >= 0)
+                {
+                    QTableWidgetItem *tItem = new QTableWidgetItem(query.value(fields.indexOf("IshodMas.IshNameShort")).toString());
+                    tItem->setFlags(tItem->flags() ^ Qt::ItemIsEditable);
+                    ui->WorkTable->setItem(row, fields.indexOf("IshodMas.IshNameShort"), tItem);
+                    ui->WorkTable->setColumnWidth(fields.indexOf("IshodMas.IshNameShort"), 200);
+                    colR++;
+                }
                 for (int col = 0; col < fields.count(); col++)
                 {
                     if (col == fields.indexOf("WorkTable.FlagReady")) continue;
                     if (col == fields.indexOf("ProdGroup.ProdGroupName")) continue;
                     if (col == fields.indexOf("IshodMas.idIshodMas")) continue;
+                    if (col == fields.indexOf("IshodMas.IshNameShort")) continue;
                     if (ui->WorkTable->columnCount() < fields.count())
                     {
                         ui->WorkTable->setColumnCount(ui->WorkTable->columnCount() + 1);
                     }
-
                     QTableWidgetItem *tItem = new QTableWidgetItem(query.value(col).toString());
                     ui->WorkTable->setItem(row, colR, tItem);
+                    if (HFields.count() <= colR)
+                    {
+                        HFields.append(tr("Столбец ") + tmpStr.setNum(colR + 1));
+                    }
                     ui->WorkTable->setColumnWidth(colR++, 200);
                 }
                 color(row);
                 row++;
             }
+            ui->WorkTable->setHorizontalHeaderLabels(HFields);
             ui->statusBar->showMessage(tr("Загружено позиций: ") + tmpStr.setNum(ui->WorkTable->rowCount()), 10000);
         }
         else
@@ -484,7 +475,7 @@ void MainWindow::color(int row)
         else
         {
             ui->WorkTable->item(row, col)->setBackground(worCol);
-            if (((ui->WorkTable->item(row, col)->flags() ^ Qt::ItemIsEditable) > 0) & (col>2))
+            if (((ui->WorkTable->item(row, col)->flags() ^ Qt::ItemIsEditable) > 0) & (col>3))
             {
                 ui->WorkTable->item(row, col)->setFlags(ui->WorkTable->item(row, col)->flags() | (Qt::ItemIsEditable));// | Qt::ItemIsSelectable));
             }

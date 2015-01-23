@@ -69,8 +69,6 @@ private:
     QStringList HFields; //Хэдеры у таблицы
 
     QList<QPoint> sList; //Список координат в таблице. соответствующих запросу поиска
-    QList<Qt::AlignmentFlag> alignment; //положение текста в таблице
- //   QList<QHeaderView::ResizeMode> resMode; //возможность расширения у столбцов таблицы
 
     QColor worCol, okCol;  //цвет позиции в работе, готовой позиции
 
