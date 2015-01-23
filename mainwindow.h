@@ -35,7 +35,7 @@ public:
 private slots:
     void enableMain(void);
 
-    void on_ProdTypes_currentRowChanged(int currentRow);
+    void ProdTypesCurrentRowChanged(int currentRow);
 
     void WorkTableCellChanged(int row, int column);
 
@@ -45,7 +45,13 @@ private slots:
 
     void on_SearchPrev_clicked();
 
-    void on_pushButton_clicked();
+    void on_ReloadButton_clicked();
+
+    void on_ExitButton_clicked();
+
+    void on_ReloadAction_triggered();
+
+    void on_ExitAction_triggered();
 
 private:
     Ui::MainWindow *ui;
@@ -84,6 +90,7 @@ private:
     void LoadWorkTable(QString queryText); //загрузка данных для обработки
     void color(int row); //установка цвета ячеек и запрет редактирования
     void updateDataBase(int row, int col); //обновление базы данных значением из ячейки
+    void LoadProdGroup2(QString queryText); //загрузка списка групп продукции тестовая
 
     LogPass *Passcard;  //окно запроса логина пароля
 

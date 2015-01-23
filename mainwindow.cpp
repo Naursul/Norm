@@ -292,6 +292,7 @@ void MainWindow::LoadOperators(QString queryText)
 
 void MainWindow::LoadProdGroup(QString queryText)
 {
+    disconnect(ui->ProdTypes, SIGNAL(currentRowChanged(int)), this, SLOT(ProdTypesCurrentRowChanged(int)));
     if (db.open())
     {
         QSqlQuery query(db);
@@ -327,7 +328,8 @@ void MainWindow::LoadProdGroup(QString queryText)
     }
     if (rowsPro > 0)
     {
-    ui->ProdTypes->setCurrentRow(0);
+        connect(ui->ProdTypes, SIGNAL(currentRowChanged(int)), this, SLOT(ProdTypesCurrentRowChanged(int)));
+        ui->ProdTypes->setCurrentRow(0);
     }
 }
 
@@ -433,7 +435,7 @@ void MainWindow::LoadWorkTable(QString queryText)
     Реакция на изменение строки в списке типов продукции
    ====================================================*/
 
-void MainWindow::on_ProdTypes_currentRowChanged(int currentRow)
+void MainWindow::ProdTypesCurrentRowChanged(int currentRow)
 {
     initWorkTable();
     disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
@@ -615,11 +617,38 @@ void MainWindow::updateDataBase(int row, int col)
     }
 }
 
+/* ======================================
+    Реакция на нажатие кнопки "Обновить"
+   ====================================*/
 
-
-
-
-void MainWindow::on_pushButton_clicked()
+void MainWindow::on_ReloadButton_clicked()
 {
-   // ui->WorkTable->r
+    LoadProdGroup("Select " + prodFields + " from ProdGroup where ProdGroup.Operator_idOperator like " + IDName + " order by ProdGroup.ProdGroupName"); //Загрузка и создание списка групп продукции у определенного пользователя
+}
+
+/* ==================================
+    Реакция на выбор меню "Обновить"
+   ================================*/
+
+void MainWindow::on_ReloadAction_triggered()
+{
+    LoadProdGroup("Select " + prodFields + " from ProdGroup where ProdGroup.Operator_idOperator like " + IDName + " order by ProdGroup.ProdGroupName"); //Загрузка и создание списка групп продукции у определенного пользователя
+}
+
+/* ===================================
+    Реакция на нажатие кнопки "Выход"
+   =================================*/
+
+void MainWindow::on_ExitButton_clicked()
+{
+    close();
+}
+
+/* ===============================
+    Реакция на выбор меню "Выход"
+   =============================*/
+
+void MainWindow::on_ExitAction_triggered()
+{
+    close();
 }
