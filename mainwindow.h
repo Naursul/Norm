@@ -66,8 +66,11 @@ private:
     QStringList idOpList, idOpNList, idOpNBList, idOpRList; //ID оператора, Имя оператора, Имя оператора в БД, статус оператора
     QStringList idProList, idProNList; //списки ID и наименований
     QStringList fields; //список полей в рабочей таблице
+    QStringList HFields; //Хэдеры у таблицы
 
     QList<QPoint> sList; //Список координат в таблице. соответствующих запросу поиска
+    QList<Qt::AlignmentFlag> alignment; //положение текста в таблице
+ //   QList<QHeaderView::ResizeMode> resMode; //возможность расширения у столбцов таблицы
 
     QColor worCol, okCol;  //цвет позиции в работе, готовой позиции
 
