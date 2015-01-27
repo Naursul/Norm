@@ -12,13 +12,16 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    logpass.cpp
+    logpass.cpp \
+    filitem.cpp
 
 HEADERS  += mainwindow.h \
-    logpass.h
+    logpass.h \
+    filitem.h
 
 FORMS    += mainwindow.ui \
-    logpass.ui
+    logpass.ui \
+    filitem.ui
 
 RESOURCES += \
     res.qrc

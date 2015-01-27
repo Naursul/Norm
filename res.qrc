@@ -3,5 +3,14 @@
         <file>Icons/Actions-go-next-icon.png</file>
         <file>Icons/Actions-go-previous-icon.png</file>
         <file>Icons/search-icon.png</file>
+        <file>Icons/Button-Turn-Off-icon.png</file>
+        <file>Icons/edit-find.png</file>
+        <file>Icons/filter-delete-icon.png</file>
+        <file>Icons/filter-icon.png</file>
+        <file>Icons/view-refresh.png</file>
+        <file>Icons/filter-add-icon.png</file>
+        <file>Icons/list-add.png</file>
+        <file>Icons/edit-delete.png</file>
+        <file>Icons/lightning-icon.png</file>
     </qresource>
 </RCC>

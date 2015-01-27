@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     usFields = "Operator.idOperator, Operator.OperatorName, Operator.BaseName, Operator.Role";  //Список полей для таблицы исполнителей (операторов)
     prodFields = "ProdGroup.idProdGroup, ProdGroup.ProdGroupName, ProdGroup.Operator_idOperator"; //список полей таблицы групп продукции
     workFields = "WorkTable.FlagReady, ProdGroup.ProdGroupName, IshodMas.idIshodMas, IshodMas.IshNameShort, WorkTable.WorkTablecol, WorkTable.WorkTablecol1, WorkTable.WorkTablecol2"; //список полей для работы
-    HFields << tr("Готово") << tr("Тип\nпродукции") << tr("ID") << tr("Исходное\nнаименование");
+    HFields << tr("Готово") << tr("Тип продукции") << tr("ID") << tr("Исходное наименование");
 
 /* =============================
     Задание цветового выделения
@@ -28,7 +28,8 @@ MainWindow::MainWindow(QWidget *parent) :
     Задание переменных по умолчанию
    ===============================*/
 
-//    timerFlag = true; //таймер по умолчанию включен
+    filFrameVisible = false;
+    //    timerFlag = true; //таймер по умолчанию включен
 //    tIn = 30000; // задание интервала обновления по умолчанию
     hName = "localhost"; //имя хоста по умолчанию
     bName = "PolusGold"; //имя БД по умолчанию
@@ -61,12 +62,18 @@ MainWindow::MainWindow(QWidget *parent) :
         RoleCheck("Select Operator.idOperator, Operator.Role from Operator where Operator.BaseName like '" + uName + "'");  //Проверка статуса пользователя и его ID
     }
 
+/* ==========================================================================
+    далее идут настройки видимости/невидимости различных полей главного окна
+   ========================================================================*/
+
+    ui->frame_2->setVisible(filFrameVisible);
     if (Role == "User")
     {
         ui->tabWidget->removeTab(1);
     }
-    loadData();  //Загрузка данных из БД в рабочую форму
 
+    loadData();  //Загрузка данных из БД в рабочую форму
+    on_addFilItem_clicked();
 }
 
 MainWindow::~MainWindow()
@@ -355,9 +362,11 @@ void MainWindow::LoadWorkTable(QString queryText)
             fields = workFields.split(", ");
             ui->plainTextEdit->appendPlainText("Количество столбцов в рабочей таблице = " + tmpStr.setNum(fields.count()));
             ui->WorkTable->setColumnCount(fields.count());
+            ui->WorkTable->setWordWrap(true);
             while (query.next())
             {
                 ui->WorkTable->insertRow(row);
+                ui->WorkTable->setRowHeight(row, 40);
                 int colR = 0;
                 if (fields.indexOf("WorkTable.FlagReady") >= 0)
                 {
@@ -415,6 +424,7 @@ void MainWindow::LoadWorkTable(QString queryText)
             }
             ui->WorkTable->setHorizontalHeaderLabels(HFields);
             ui->statusBar->showMessage(tr("Загружено позиций: ") + tmpStr.setNum(ui->WorkTable->rowCount()), 10000);
+           // ui->WorkTable->resizeRowsToContents();
         }
         else
         {
@@ -651,4 +661,106 @@ void MainWindow::on_ExitButton_clicked()
 void MainWindow::on_ExitAction_triggered()
 {
     close();
+}
+
+/* =============================================
+    Реакция на нажатие кнопки "Включить фильтр"
+   ===========================================*/
+
+void MainWindow::on_FilterOn_clicked()
+{
+    filFrameVisible = !filFrameVisible;
+    ui->frame_2->setVisible(filFrameVisible);
+}
+
+/* ===========================================
+    Реакция на нажатие кнопки "Добавить поле"
+   =========================================*/
+
+void MainWindow::on_addFilItem_clicked()
+{
+    filList.clear();
+    for (int col = 2; col < ui->WorkTable->columnCount(); col++)
+    {
+        filList.append(HFields.at(col));
+    }
+    ui->verticalLayout_2->addWidget(fItem = new FilItem(ui->frame_2, &filList));
+}
+
+/* ==============================================
+    Реакция на нажатие кнопки "Применить фильтр"
+   ============================================*/
+
+void MainWindow::on_FilOn_clicked()
+{
+    QString filQuer = "", filQuer1 = "";
+    QList<int> indCol; //индексы колонок
+    QStringList filtxt; //текст запроса
+    QList<bool> loockup; //запрос добавлен в строку запроса
+    QObjectList qList = ui->frame_2->children();
+    for ( int i = 0; i < qList.count(); i++)
+    {
+        if (qList.at(i)->objectName() == "FilItem")
+        {
+            FilItem *it = (FilItem *) qList.at(i);
+            if (it->filItemOn())
+            {
+                indCol.append(it->filColumnIndex());
+                if (it->filOptionIndex() > 1)
+                {
+                    filtxt.append(fields.at(HFields.indexOf(filList.at(it->filColumnIndex()))) + it->filOptionText() + it->filText() + "%'");
+                }
+                else
+                {
+                    filtxt.append(fields.at(HFields.indexOf(filList.at(it->filColumnIndex()))) + it->filOptionText() + it->filText() + "'");
+                }
+                loockup.append(true);
+            }
+        }
+    }
+    for (int i = 0; i < indCol.count(); i++)
+    {
+        if (loockup.at(i))
+        {
+            loockup.replace(i, false);
+            filQuer1 = "(" + filtxt.at(i) + ")";
+            for (int j = i+1; j < indCol.count(); j++)
+            {
+                if ((loockup.at(j)) && (indCol.at(j) == indCol.at(i)))
+                {
+                    loockup.replace(j, false);
+                    filQuer1 = "(" + filQuer1 + " OR (" + filtxt.at(j) + "))";
+                }
+            }
+            filQuer = filQuer + " AND " + filQuer1;
+        }
+    }
+    initWorkTable();
+    disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
+    LoadWorkTable("select " + workFields + " from WorkTable join IshodMas on (WorkTable.IshodMas_idIshodMas = IshodMas.idIshodMas) left join ProdGroup on (WorkTable.ProdGroup_idProdGroup = ProdGroup.idProdGroup) where (ProdGroup.idProdGroup = " + idProList.at(ui->ProdTypes->currentRow()) + ")" + filQuer);
+    connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
+}
+
+/* ==========================================
+    Реакция на нажатие кнопки "Снять фильтр"
+   ============================================*/
+
+void MainWindow::on_FilterOff_clicked()
+{
+    initWorkTable();
+    disconnect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
+    LoadWorkTable("select " + workFields + " from WorkTable join IshodMas on (WorkTable.IshodMas_idIshodMas = IshodMas.idIshodMas) left join ProdGroup on (WorkTable.ProdGroup_idProdGroup = ProdGroup.idProdGroup) where ProdGroup.idProdGroup = " + idProList.at(ui->ProdTypes->currentRow()));
+    connect(ui->WorkTable, SIGNAL(cellChanged(int,int)), this, SLOT(WorkTableCellChanged(int,int)));
+    QObjectList qList = ui->frame_2->children();
+    for ( int i = 0; i < qList.count(); i++)
+    {
+        if (qList.at(i)->objectName() == "FilItem")
+        {
+            FilItem *it = (FilItem *) qList.at(i);
+            it->close();
+        }
+    }
+    on_addFilItem_clicked();
+    filFrameVisible = false;
+    ui->frame_2->setVisible(filFrameVisible);
 }

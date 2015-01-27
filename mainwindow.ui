@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>907</width>
-    <height>564</height>
+    <width>864</width>
+    <height>563</height>
    </rect>
   </property>
   <property name="palette">
@@ -64,7 +64,7 @@
        <attribute name="title">
         <string>Обработка</string>
        </attribute>
-       <layout class="QHBoxLayout" name="horizontalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="0,1,0">
         <item>
          <layout class="QVBoxLayout" name="verticalLayout">
           <property name="sizeConstraint">
@@ -138,6 +138,16 @@
                <property name="text">
                 <string>Обновить</string>
                </property>
+               <property name="icon">
+                <iconset resource="res.qrc">
+                 <normaloff>:/new/Icons/Icons/view-refresh.png</normaloff>:/new/Icons/Icons/view-refresh.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
               </widget>
              </item>
              <item>
@@ -145,25 +155,17 @@
                <property name="text">
                 <string>Выйти</string>
                </property>
+               <property name="icon">
+                <iconset resource="res.qrc">
+                 <normaloff>:/new/Icons/Icons/Button-Turn-Off-icon.png</normaloff>:/new/Icons/Icons/Button-Turn-Off-icon.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
               </widget>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout">
-               <item>
-                <widget class="QToolButton" name="toolButton">
-                 <property name="text">
-                  <string>...</string>
-                 </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QToolButton" name="toolButton_2">
-                 <property name="text">
-                  <string>...</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </item>
             </layout>
            </widget>
@@ -174,13 +176,25 @@
          <layout class="QVBoxLayout" name="verticalLayout_5">
           <item>
            <widget class="QTableWidget" name="WorkTable">
+            <property name="font">
+             <font>
+              <pointsize>10</pointsize>
+             </font>
+            </property>
             <property name="sortingEnabled">
              <bool>true</bool>
             </property>
            </widget>
           </item>
           <item>
-           <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <layout class="QHBoxLayout" name="horizontalLayout">
+            <item>
+             <widget class="QLabel" name="label_2">
+              <property name="text">
+               <string>Поиск</string>
+              </property>
+             </widget>
+            </item>
             <item>
              <widget class="QLineEdit" name="SearchLine"/>
             </item>
@@ -194,7 +208,7 @@
               </property>
               <property name="icon">
                <iconset resource="res.qrc">
-                <normaloff>:/new/Icons/Icons/search-icon.png</normaloff>:/new/Icons/Icons/search-icon.png</iconset>
+                <normaloff>:/new/Icons/Icons/edit-find.png</normaloff>:/new/Icons/Icons/edit-find.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -208,6 +222,9 @@
              <widget class="QToolButton" name="SearchPrev">
               <property name="enabled">
                <bool>false</bool>
+              </property>
+              <property name="toolTip">
+               <string>Предыдущий</string>
               </property>
               <property name="text">
                <string>...</string>
@@ -229,12 +246,69 @@
               <property name="enabled">
                <bool>false</bool>
               </property>
+              <property name="toolTip">
+               <string>Следующий</string>
+              </property>
               <property name="text">
                <string>...</string>
               </property>
               <property name="icon">
                <iconset resource="res.qrc">
                 <normaloff>:/new/Icons/Icons/Actions-go-next-icon.png</normaloff>:/new/Icons/Icons/Actions-go-next-icon.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="Line" name="line_2">
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="label_3">
+              <property name="text">
+               <string>Фильтр</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="FilterOn">
+              <property name="toolTip">
+               <string>Добавить фильтры</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="res.qrc">
+                <normaloff>:/new/Icons/Icons/filter-icon.png</normaloff>:/new/Icons/Icons/filter-icon.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>24</width>
+                <height>24</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="FilterOff">
+              <property name="toolTip">
+               <string>Сбросить фильтры</string>
+              </property>
+              <property name="text">
+               <string/>
+              </property>
+              <property name="icon">
+               <iconset resource="res.qrc">
+                <normaloff>:/new/Icons/Icons/filter-delete-icon.png</normaloff>:/new/Icons/Icons/filter-delete-icon.png</iconset>
               </property>
               <property name="iconSize">
                <size>
@@ -263,6 +337,88 @@
            </widget>
           </item>
          </layout>
+        </item>
+        <item>
+         <widget class="QFrame" name="frame_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+          <layout class="QVBoxLayout" name="verticalLayout_4">
+           <property name="spacing">
+            <number>4</number>
+           </property>
+           <property name="margin">
+            <number>4</number>
+           </property>
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <property name="spacing">
+              <number>4</number>
+             </property>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout_6">
+             <item>
+              <widget class="QPushButton" name="addFilItem">
+               <property name="text">
+                <string>Добавить условие</string>
+               </property>
+               <property name="icon">
+                <iconset resource="res.qrc">
+                 <normaloff>:/new/Icons/Icons/filter-add-icon.png</normaloff>:/new/Icons/Icons/filter-add-icon.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="FilOn">
+               <property name="text">
+                <string>Применить фильтр</string>
+               </property>
+               <property name="icon">
+                <iconset resource="res.qrc">
+                 <normaloff>:/new/Icons/Icons/lightning-icon.png</normaloff>:/new/Icons/Icons/lightning-icon.png</iconset>
+               </property>
+               <property name="iconSize">
+                <size>
+                 <width>24</width>
+                 <height>24</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
         </item>
        </layout>
       </widget>
@@ -319,7 +475,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>907</width>
+     <width>864</width>
      <height>25</height>
     </rect>
    </property>
@@ -353,6 +509,10 @@
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
   <action name="ReloadAction">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/new/Icons/Icons/view-refresh.png</normaloff>:/new/Icons/Icons/view-refresh.png</iconset>
+   </property>
    <property name="text">
     <string>Обновить</string>
    </property>
@@ -363,6 +523,10 @@
    </property>
   </action>
   <action name="ExitAction">
+   <property name="icon">
+    <iconset resource="res.qrc">
+     <normaloff>:/new/Icons/Icons/Button-Turn-Off-icon.png</normaloff>:/new/Icons/Icons/Button-Turn-Off-icon.png</iconset>
+   </property>
    <property name="text">
     <string>Выход</string>
    </property>
